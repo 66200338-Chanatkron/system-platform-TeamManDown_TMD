@@ -1,0 +1,25 @@
+sql {
+    driver = "rlm_sql_postgresql"
+
+    dialect = "postgresql"
+
+    server = "tmd_postgres"
+    port = 5432
+    login = "pguser"
+    password = "pgpassword"
+
+    radius_db = "radius"
+
+    read_clients = yes
+    client_table = "nas"
+
+    pool {
+        start = 5
+        min = 2
+        max = 10
+        spare = 3
+        uses = 0
+        lifetime = 0
+        cleanup_interval = 30
+    }
+}
