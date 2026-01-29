@@ -1,0 +1,69 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: tmd_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./src:/var/www/html
+    depends_on:
+      - postgres
+      - mysql
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:15
+    container_name: tmd_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mypgdb
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:5.7
+    container_name: tmd_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+
+  freeradius:
+    image: freeradius/freeradius-server:latest
+    container_name: freeradius
+    restart: always
+    ports:
+      - "1812:1812/udp"
+      - "1813:1813/udp"
+    volumes:
+      - ./freeradius:/etc/freeradius
+    depends_on:
+      - mysql
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  pg_data:
+  mysql_data:
