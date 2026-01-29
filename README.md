@@ -1,1 +1,1 @@
-pingpro
+pingpro  ปัญญาอ่อนน
