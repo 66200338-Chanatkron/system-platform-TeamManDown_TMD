@@ -54,12 +54,23 @@ services:
     ports:
       - "1812:1812/udp"
       - "1813:1813/udp"
+    environment:
+      - RADIUS_DEBUG=yes
     volumes:
-      - ./freeradius:/etc/freeradius
+      # Mount ไปที่ Temp เพื่อหลบปัญหา Permission 777 ของ Windows
+      - ./freeradius:/tmp/radius-config
+    # ใช้คำสั่งนี้ครับ (เปลี่ยน radiusd เป็น freeradius)
+    command: >
+      /bin/sh -c "
+      cp -rf /tmp/radius-config/. /etc/raddb/ && 
+      chown -R root:root /etc/raddb && 
+      chmod -R o-w /etc/raddb && 
+      /usr/sbin/freeradius -f -XX" 
     depends_on:
       - mysql
     networks:
       - backend
+
   nextjs:
     container_name: tmd_nextjs
     build:
@@ -70,6 +81,18 @@ services:
       - ./nextjs:/app
       - /app/node_modules
     command: npm run dev
+    networks:
+      - backend
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: tmd_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com  # อีเมลสำหรับ login เข้าหน้าเว็บ pgAdmin
+      PGADMIN_DEFAULT_PASSWORD: root          # รหัสผ่านสำหรับ login เข้าหน้าเว็บ pgAdmin
+    ports:
+      - "5050:80"  # เข้าใช้งานผ่าน browser ที่ http://localhost:5050
     networks:
       - backend
 
