@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [status, setStatus] = useState(''); // เอาไว้โชว์สถานะ
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('Checking...');
 
@@ -24,8 +24,9 @@ export default function LoginPage() {
 
       if (data.success) {
         setStatus('✅ Login Success! Redirecting...');
-        // ตรงนี้คุณอาจจะ redirect ไปหน้า dashboard
-        // router.push('/dashboard'); 
+         // Redirect to dashboard (cookie is already set by API)
+         router.push('/'); 
+         router.refresh(); 
       } else {
         setStatus('❌ Login Failed: ' + data.message);
       }
@@ -37,8 +38,8 @@ export default function LoginPage() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>WiFi Login System</h1>
-        <p style={styles.subtitle}>TeamManDown Platform</p>
+        <h1 style={styles.title}>DooDram</h1>
+        <p style={styles.subtitle}>Sign In to Watch</p>
         
         <form onSubmit={handleLogin} style={styles.form}>
           <input
@@ -48,6 +49,7 @@ export default function LoginPage() {
             onChange={(e) => setUsername(e.target.value)}
             style={styles.input}
             required
+            className="text-black"
           />
           <input
             type="password"
@@ -56,6 +58,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             style={styles.input}
             required
+            className="text-black" 
           />
           <button type="submit" style={styles.button}>Login</button>
         </form>
@@ -66,14 +69,14 @@ export default function LoginPage() {
   );
 }
 
-// Style แบบบ้านๆ (Inline Style) เพื่อความง่ายในการก๊อปแปะ
+// Style แบบบ้านๆ (Inline Style)
 const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' },
-  card: { padding: '2rem', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '350px', textAlign: 'center' },
-  title: { margin: '0 0 10px 0', color: '#333' },
-  subtitle: { margin: '0 0 20px 0', color: '#666', fontSize: '14px' },
-  form: { display: 'flex', flexDirection: 'column', gap: '15px' },
-  input: { padding: '10px', borderRadius: '5px', border: '1px solid #ddd', fontSize: '16px' },
-  button: { padding: '10px', borderRadius: '5px', border: 'none', backgroundColor: '#0070f3', color: 'white', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' },
-  status: { marginTop: '15px', fontSize: '14px', fontWeight: 'bold' }
+  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#000', color: 'white' },
+  card: { padding: '3rem', backgroundColor: 'rgba(0,0,0,0.75)', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '400px', textAlign: 'center' as const, border: '1px solid #333' },
+  title: { margin: '0 0 10px 0', color: '#e50914', fontSize: '2.5rem', fontWeight: 'bold' },
+  subtitle: { margin: '0 0 20px 0', color: '#aaa', fontSize: '14px' },
+  form: { display: 'flex', flexDirection: 'column' as const, gap: '20px' },
+  input: { padding: '15px', borderRadius: '5px', border: 'none', fontSize: '16px', backgroundColor: '#333', color: 'white', outline: 'none' },
+  button: { padding: '15px', borderRadius: '5px', border: 'none', backgroundColor: '#e50914', color: 'white', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' },
+  status: { marginTop: '15px', fontSize: '14px', fontWeight: 'bold', color: '#ffa00a' }
 };
