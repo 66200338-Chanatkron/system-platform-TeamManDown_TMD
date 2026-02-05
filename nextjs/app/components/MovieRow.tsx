@@ -15,56 +15,59 @@ const MovieRow: React.FC<MovieRowProps> = ({ title, movies }) => {
 
   const handleClick = (direction: 'left' | 'right') => {
     setIsMoved(true);
-
     if (rowRef.current) {
       const { scrollLeft, clientWidth } = rowRef.current;
+      // ปรับให้เลื่อนประมาณ 80% ของหน้าจอ เพื่อให้เห็น Card ถัดไปบางส่วน
       const scrollTo =
         direction === 'left'
-          ? scrollLeft - clientWidth
-          : scrollLeft + clientWidth;
+          ? scrollLeft - clientWidth * 0.8
+          : scrollLeft + clientWidth * 0.8;
       
       rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };
 
   return (
-    <div className="h-40 space-y-0.5 md:space-y-2 px-4 md:px-12 my-8">
-      <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#e5e5e5] transition duration-200 hover:text-white md:text-2xl">
+    // เปลี่ยนจาก h-40 เป็น min-h เพื่อความยืดหยุ่น และปรับระยะห่างระหว่างแถว
+    <div className="flex flex-col space-y-2 md:space-y-4 my-6 md:my-10">
+      {/* Section Title */}
+      <h2 className="px-4 md:px-12 text-lg font-bold text-[#e5e5e5] transition duration-200 hover:text-white md:text-2xl tracking-tight">
         {title}
       </h2>
-      <div className="group relative md:-ml-2">
-        <svg 
-           xmlns="http://www.w3.org/2000/svg" 
-           fill="none" 
-           viewBox="0 0 24 24" 
-           strokeWidth={1.5} 
-           stroke="currentColor" 
-           className={`absolute top-0 bottom-0 left-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100 ${!isMoved && 'hidden'}`}
-           onClick={() => handleClick('left')}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-        </svg>
 
+      <div className="relative">
+        {/* Left Chevron: ซ่อนเมื่อยังไม่ได้เลื่อน และซ่อนถาวรบนจอเล็ก */}
+        <button
+          className={`absolute top-0 bottom-0 left-0 z-40 m-auto h-full w-12 items-center justify-center bg-black/20 opacity-0 transition group-hover:opacity-100 hover:bg-black/40 hidden md:flex ${!isMoved && 'md:hidden'}`}
+          onClick={() => handleClick('left')}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="h-9 w-9">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+
+        {/* Movie Cards Container */}
         <div
-          className="flex items-center space-x-2.5 overflow-x-scroll scrollbar-hide md:space-x-3.5 md:p-2"
+          className="flex items-center space-x-2 md:space-x-4 overflow-x-scroll scrollbar-hide px-4 md:px-12 scroll-smooth snap-x snap-mandatory"
           ref={rowRef}
         >
           {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
+            // Snap alignment เพื่อให้ Card ลงล็อกพอดีเวลาเลื่อนบนมือถือ
+            <div key={movie.id} className="snap-start flex-shrink-0">
+              <MovieCard movie={movie} />
+            </div>
           ))}
         </div>
 
-        <svg 
-           xmlns="http://www.w3.org/2000/svg" 
-           fill="none" 
-           viewBox="0 0 24 24" 
-           strokeWidth={1.5} 
-           stroke="currentColor" 
-           className="absolute top-0 bottom-0 right-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100"
-           onClick={() => handleClick('right')}
+        {/* Right Chevron: ซ่อนถาวรบนจอเล็ก */}
+        <button
+          className="absolute top-0 bottom-0 right-0 z-40 m-auto h-full w-12 items-center justify-center bg-black/20 opacity-0 transition group-hover:opacity-100 hover:bg-black/40 hidden md:flex"
+          onClick={() => handleClick('right')}
         >
-           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="h-9 w-9">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
       </div>
     </div>
   );
